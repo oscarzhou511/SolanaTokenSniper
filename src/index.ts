@@ -69,6 +69,31 @@ async function processTransaction(signature: string): Promise<void> {
   if (config.rug_check.simulation_mode) {
     console.log("👀 Token not swapped. Simulation mode is enabled.");
     console.log("🟢 Resuming looking for new tokens..\n");
+    // Send token mint address to Discord webhook
+    const webhookUrl = "https://discord.com/api/webhooks/1333388729313923125/N8N8h5bJSPsumvuTllUySxrxw4ikgsVLRDM6ncWMVled8On3dxtCAL3LrFBoMCmnAybf"
+    const discordPayload = {
+      content: `New token detected! 🪙\nToken Mint Address: ${data.tokenMint}\nCheck it out:\n👽 GMGN: https://gmgn.ai/sol/token/${data.tokenMint}\n😈 BullX: https://neo.bullx.io/terminal?chainId=1399811149&address=${data.tokenMint}`
+    };
+  
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(discordPayload),
+      });
+  
+      if (response.ok) {
+        console.log("✅ Token mint address sent to Discord webhook successfully.");
+      } else {
+        console.error("❌ Failed to send token mint address to Discord webhook.");
+        console.error(`Response: ${await response.text()}`);
+      }
+    } catch (error) {
+      console.error("❌ An error occurred while sending token mint address to Discord webhook.");
+      console.error(error);
+    }
     return;
   }
 
